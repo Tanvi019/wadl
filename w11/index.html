@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Registration and Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+    }
+
+    h2 {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .form-header {
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #666;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #333;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #555;
+    }
+
+    .error {
+      color: #d9534f;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .success {
+      color: #2e7d32;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .toggle-link {
+      color: #333;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 14px;
+    }
+
+    .toggle-link:hover {
+      color: #000;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #userList {
+      margin-top: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f1f1;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    .logout {
+      display: inline-block;
+      margin-top: 10px;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .logout:hover {
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Register -->
+  <div id="registerSection">
+    <div class="form-header">
+      <h2>Register</h2>
+    </div>
+
+    <form id="registerForm">
+      <div class="form-group"><input type="text" id="name" placeholder="Full Name" required></div>
+      <div class="form-group"><input type="email" id="email" placeholder="Email" required></div>
+      <div class="form-group"><input type="text" id="mobile" placeholder="Mobile (10 digits)" required></div>
+      <div class="form-group"><input type="date" id="dob" required></div>
+      <div class="form-group"><input type="text" id="city" placeholder="City" required></div>
+      <div class="form-group"><input type="text" id="address" placeholder="Address" required></div>
+      <div class="form-group"><input type="text" id="regUsername" placeholder="Username" required></div>
+      <div class="form-group"><input type="password" id="regPassword" placeholder="Password (min 6 chars)" required></div>
+
+      <button type="submit">Register</button>
+      <p id="registerMessage" class="error"></p>
+    </form>
+
+    <p>Already have an account? <span class="toggle-link" id="showLogin">Login here</span></p>
+  </div>
+
+  <!-- Login -->
+  <div id="loginSection" class="hidden">
+    <div class="form-header">
+      <h2>Login</h2>
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group"><input type="text" id="loginUsername" placeholder="Username" required></div>
+      <div class="form-group"><input type="password" id="loginPassword" placeholder="Password" required></div>
+
+      <button type="submit">Login</button>
+      <p id="loginMessage" class="error"></p>
+    </form>
+
+    <p>Don't have an account? <span class="toggle-link" id="showRegister">Register here</span></p>
+  </div>
+
+  <!-- User List -->
+  <div id="userList" class="hidden">
+    <h3>Registered Users</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Mobile</th><th>DOB</th><th>City</th><th>Address</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody"></tbody>
+    </table>
+    <span class="logout" id="logout">Logout</span>
+  </div>
+
+</div>
+
+<script>
+function isValidEmail(email) {
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+}
+
+function ajaxPost(url, data) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      users.push(data);
+      localStorage.setItem("users", JSON.stringify(users));
+      resolve({ status: "success" });
+    }, 500);
+  });
+}
+
+document.getElementById("showLogin").onclick = () => {
+  registerSection.classList.add("hidden");
+  loginSection.classList.remove("hidden");
+};
+
+document.getElementById("showRegister").onclick = () => {
+  loginSection.classList.add("hidden");
+  registerSection.classList.remove("hidden");
+};
+
+document.getElementById("logout").onclick = () => {
+  userList.classList.add("hidden");
+  loginSection.classList.remove("hidden");
+};
+
+document.getElementById("registerForm").onsubmit = async function(e) {
+  e.preventDefault();
+
+  const name = nameInput = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const dob = document.getElementById("dob").value;
+  const city = document.getElementById("city").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const username = document.getElementById("regUsername").value.trim();
+  const password = document.getElementById("regPassword").value;
+
+  const msg = document.getElementById("registerMessage");
+  msg.textContent = "";
+
+  if (!isValidEmail(email)) return msg.textContent = "Invalid email";
+  if (!/^\d{10}$/.test(mobile)) return msg.textContent = "Invalid mobile";
+  if (password.length < 6) return msg.textContent = "Password too short";
+
+  await ajaxPost("/register", { name, email, mobile, dob, city, address, username, password });
+
+  msg.textContent = "Registered successfully!";
+  msg.className = "success";
+  this.reset();
+
+  setTimeout(() => {
+    registerSection.classList.add("hidden");
+    loginSection.classList.remove("hidden");
+    msg.textContent = "";
+  }, 1200);
+};
+
+document.getElementById("loginForm").onsubmit = function(e) {
+  e.preventDefault();
+
+  const username = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value;
+
+  const users = JSON.parse(localStorage.getItem("users") || "[]");
+  const user = users.find(u => u.username === username && u.password === password);
+
+  const msg = document.getElementById("loginMessage");
+
+  if (user) {
+    msg.textContent = "Login successful";
+    msg.className = "success";
+
+    loginSection.classList.add("hidden");
+    showUserList(users);
+  } else {
+    msg.textContent = "Invalid credentials";
+  }
+};
+
+function showUserList(users) {
+  userList.classList.remove("hidden");
+  const tbody = document.getElementById("userTableBody");
+  tbody.innerHTML = "";
+
+  users.forEach(u => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${u.name}</td>
+        <td>${u.email}</td>
+        <td>${u.mobile}</td>
+        <td>${u.dob}</td>
+        <td>${u.city}</td>
+        <td>${u.address}</td>
+      </tr>`;
+  });
+}
+</script>
+
+</body>
+</html>
