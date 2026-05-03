@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Data</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(120deg, #2980b9, #6dd5fa);
+            margin: 0;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #2980b9;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #2c3e50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    User Data from JSON File
+</header>
+
+<div class="container">
+
+    <button onclick="loadUsers()">Load Users</button>
+
+    <div id="output"></div>
+
+</div>
+
+<footer>
+    © 2026 User API | Node.js
+</footer>
+
+<script>
+
+async function loadUsers() {
+    const res = await fetch('/api/users');
+    const data = await res.json();
+
+    let table = `
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>City</th>
+        </tr>`;
+
+    data.forEach(user => {
+        table += `
+        <tr>
+            <td>${user.id}</td>
+            <td>${user.name}</td>
+            <td>${user.age}</td>
+            <td>${user.city}</td>
+        </tr>`;
+    });
+
+    table += "</table>";
+
+    document.getElementById("output").innerHTML = table;
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Management System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #2980b9, #6dd5fa);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 18%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add { background: #27ae60; color: white; }
+        .view { background: #2980b9; color: white; }
+        .update { background: #f39c12; color: white; }
+        .delete { background: #e74c3c; color: white; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #2c3e50;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    Employee Management System
+</header>
+
+<div class="container">
+
+    <h2>Add / Update Employee</h2>
+
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="department" placeholder="Department">
+    <input type="text" id="designation" placeholder="Designation">
+    <input type="number" id="salary" placeholder="Salary">
+    <input type="date" id="joiningDate">
+
+    <br>
+
+    <button class="add" onclick="addEmployee()">Add Employee</button>
+    <button class="update" onclick="updateEmployee()">Update Employee</button>
+    <button class="delete" onclick="deleteEmployee()">Delete Employee</button>
+    <button class="view" onclick="loadEmployees()">View All</button>
+
+    <br><br>
+
+    <input type="text" id="empId" placeholder="Enter Employee ID for Update/Delete">
+
+    <div id="output"></div>
+
+</div>
+
+<footer>
+    © 2026 Employee System | Node.js + MongoDB
+</footer>
+
+<script>
+
+async function addEmployee() {
+    const emp = getFormData();
+
+    await fetch('/api/employees', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(emp)
+    });
+
+    alert("Employee Added");
+    loadEmployees();
+}
+
+async function loadEmployees() {
+    const res = await fetch('/api/employees');
+    const data = await res.json();
+
+    let table = `
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Designation</th>
+            <th>Salary</th>
+            <th>Joining Date</th>
+        </tr>`;
+
+    data.forEach(emp => {
+        table += `
+        <tr>
+            <td>${emp._id}</td>
+            <td>${emp.name}</td>
+            <td>${emp.department}</td>
+            <td>${emp.designation}</td>
+            <td>${emp.salary}</td>
+            <td>${new Date(emp.joiningDate).toLocaleDateString()}</td>
+        </tr>`;
+    });
+
+    table += "</table>";
+
+    document.getElementById("output").innerHTML = table;
+}
+
+async function updateEmployee() {
+    const id = document.getElementById("empId").value;
+    const emp = getFormData();
+
+    await fetch(`/api/employees/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(emp)
+    });
+
+    alert("Employee Updated");
+    loadEmployees();
+}
+
+async function deleteEmployee() {
+    const id = document.getElementById("empId").value;
+
+    await fetch(`/api/employees/${id}`, {
+        method: "DELETE"
+    });
+
+    alert("Employee Deleted");
+    loadEmployees();
+}
+
+function getFormData() {
+    return {
+        name: document.getElementById("name").value,
+        department: document.getElementById("department").value,
+        designation: document.getElementById("designation").value,
+        salary: document.getElementById("salary").value,
+        joiningDate: document.getElementById("joiningDate").value
+    };
+}
+
+</script>
+
+</body>
+</html>

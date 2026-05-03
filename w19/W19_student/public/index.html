@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Student Marks - Simple UI</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Student Marks (W19)</h1>
+
+      <div class="row">
+        <button id="insertSample">Insert Sample Students</button>
+        <button id="listAll">List All Students</button>
+        <button id="tableView">Show Table</button>
+      </div>
+
+      <div class="row">
+        <button id="dsbda20">DSBDA > 20</button>
+        <button id="above25All">All Subjects > 25</button>
+        <button id="less40Both">WAD & CNS < 40</button>
+      </div>
+
+      <div class="row small-forms">
+        <form id="addForm">
+          <h3>Add Student</h3>
+          <input name="Name" placeholder="Name" required>
+          <input name="Roll_No" placeholder="Roll No" type="number" required>
+          <input name="WAD_Marks" placeholder="WAD" type="number" required>
+          <input name="DSBDA_Marks" placeholder="DSBDA" type="number" required>
+          <input name="CNS_Marks" placeholder="CNS" type="number" required>
+          <input name="CC_Marks" placeholder="CC" type="number" required>
+          <input name="AI_marks" placeholder="AI" type="number" required>
+          <button type="submit">Add</button>
+        </form>
+
+        <form id="updateForm">
+          <h3>Update +10 by Roll</h3>
+          <input id="updateRoll" placeholder="Roll No" type="number" required>
+          <button type="submit">Update</button>
+        </form>
+
+        <form id="deleteForm">
+          <h3>Delete by Roll</h3>
+          <input id="deleteRoll" placeholder="Roll No" type="number" required>
+          <button type="submit">Delete</button>
+        </form>
+      </div>
+
+      <div id="output" class="output"></div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

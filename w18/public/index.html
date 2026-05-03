@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Music Management</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(120deg, #2980b9, #6dd5fa);
+    margin: 0;
+}
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+.container {
+    width: 90%;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+input {
+    padding: 10px;
+    margin: 5px;
+    width: 18%;
+}
+button {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    color: black;
+}
+.add { background: green; }
+.view { background: blue; }
+.update { background: orange; }
+.delete { background: red; }
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+th {
+    background: #34495e;
+    color: white;
+}
+footer {
+    text-align: center;
+    padding: 10px;
+    background: #2c3e50;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>🎵 Music Database</header>
+
+<div class="container">
+
+<button class="add" onclick="seedData()">Insert 5 Songs</button>
+<button class="view" onclick="loadSongs()">View All</button>
+
+<br><br>
+
+<input type="text" id="director" placeholder="Music Director">
+<button onclick="getByDirector()">Search Director</button>
+
+<input type="text" id="singer" placeholder="Singer">
+<input type="text" id="film" placeholder="Film">
+<button onclick="getSingerFilm()">Singer + Film</button>
+
+<br><br>
+
+<input type="text" id="songId" placeholder="Song ID">
+<input type="text" id="actor" placeholder="Actor">
+<input type="text" id="actress" placeholder="Actress">
+
+<button class="update" onclick="updateSong()">Update Actor/Actress</button>
+<button class="delete" onclick="deleteSong()">Delete Song</button>
+
+<div id="output"></div>
+
+</div>
+
+<footer>© 2026 Music App</footer>
+
+<script>
+
+async function seedData() {
+    await fetch('/api/songs/seed');
+    alert("Inserted");
+    loadSongs();
+}
+
+async function loadSongs() {
+    const res = await fetch('/api/songs');
+    const data = await res.json();
+
+    let table = `<h3>Total Songs: ${data.count}</h3>
+    <table>
+    <tr>
+    <th>Song</th><th>Film</th><th>Director</th>
+    <th>Singer</th><th>Actor</th><th>Actress</th>
+    </tr>`;
+
+    data.songs.forEach(s => {
+        table += `<tr>
+        <td>${s.Songname}</td>
+        <td>${s.Film}</td>
+        <td>${s.Music_director}</td>
+        <td>${s.singer}</td>
+        <td>${s.Actor || "-"}</td>
+        <td>${s.Actress || "-"}</td>
+        </tr>`;
+    });
+
+    table += "</table>";
+    document.getElementById("output").innerHTML = table;
+}
+
+async function getByDirector() {
+    const d = document.getElementById("director").value;
+    const res = await fetch(`/api/songs/director/${d}`);
+    const data = await res.json();
+    console.log(data);
+}
+
+async function getSingerFilm() {
+    const s = document.getElementById("singer").value;
+    const f = document.getElementById("film").value;
+
+    const res = await fetch(`/api/songs/singer/${s}/film/${f}`);
+    const data = await res.json();
+    console.log(data);
+}
+
+async function deleteSong() {
+    const id = document.getElementById("songId").value;
+    await fetch(`/api/songs/${id}`, { method: "DELETE" });
+    alert("Deleted");
+    loadSongs();
+}
+
+async function updateSong() {
+    const id = document.getElementById("songId").value;
+
+    await fetch(`/api/songs/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            Actor: document.getElementById("actor").value,
+            Actress: document.getElementById("actress").value
+        })
+    });
+
+    alert("Updated");
+    loadSongs();
+}
+
+</script>
+
+</body>
+</html>

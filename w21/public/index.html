@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Bookstore</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #2980b9, #6dd5fa); /* ✅ Same as Employee */
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 22px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 18%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add { background: #27ae60; color: white; }
+        .view { background: #2980b9; color: white; }
+        .update { background: #f39c12; color: white; }
+        .delete { background: #e74c3c; color: white; }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #34495e;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 12px;
+            background: #2c3e50;
+            color: white;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    📚 Online Bookstore Management
+</header>
+
+<div class="container">
+
+    <h2>Add / Update Book</h2>
+
+    <input type="text" id="title" placeholder="Title">
+    <input type="text" id="author" placeholder="Author">
+    <input type="number" id="price" placeholder="Price">
+    <input type="text" id="genre" placeholder="Genre">
+
+    <br>
+
+    <button class="add" onclick="addBook()">Add Book</button>
+    <button class="update" onclick="updateBook()">Update Book</button>
+    <button class="delete" onclick="deleteBook()">Delete Book</button>
+    <button class="view" onclick="loadBooks()">View All</button>
+
+    <br><br>
+
+    <input type="text" id="bookId" placeholder="Enter Book ID for Update/Delete">
+
+    <div id="output"></div>
+
+</div>
+
+<footer>
+    © 2026 Online Bookstore | Node.js + MongoDB
+</footer>
+
+<script>
+
+function getFormData() {
+    return {
+        title: document.getElementById("title").value,
+        author: document.getElementById("author").value,
+        price: document.getElementById("price").value,
+        genre: document.getElementById("genre").value
+    };
+}
+
+async function addBook() {
+    await fetch('/api/books', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(getFormData())
+    });
+
+    alert("Book Added");
+    loadBooks();
+}
+
+async function loadBooks() {
+    const res = await fetch('/api/books');
+    const data = await res.json();
+
+    let table = `
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Genre</th>
+        </tr>`;
+
+    data.forEach(book => {
+        table += `
+        <tr>
+            <td>${book._id}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.price}</td>
+            <td>${book.genre}</td>
+        </tr>`;
+    });
+
+    table += "</table>";
+
+    document.getElementById("output").innerHTML = table;
+}
+
+async function updateBook() {
+    const id = document.getElementById("bookId").value;
+
+    await fetch(`/api/books/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(getFormData())
+    });
+
+    alert("Book Updated");
+    loadBooks();
+}
+
+async function deleteBook() {
+    const id = document.getElementById("bookId").value;
+
+    await fetch(`/api/books/${id}`, {
+        method: "DELETE"
+    });
+
+    alert("Book Deleted");
+    loadBooks();
+}
+
+</script>
+
+</body>
+</html>
