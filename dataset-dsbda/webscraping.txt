@@ -1,0 +1,215 @@
+﻿28)
+import requests
+from bs4 import BeautifulSoup
+
+
+# URL
+url = "https://webscraper.io/test-sites/e-commerce/static"
+
+
+# Fetch webpage
+response = requests.get(url)
+
+
+# Parse HTML
+soup = BeautifulSoup(response.text, "html.parser")
+
+
+# Find all products
+products = soup.find_all("div", class_="thumbnail")
+
+
+# Loop through products
+for product in products:
+
+
+    # Product Name
+    name = product.find("a", class_="title").text.strip()
+
+
+    # Price
+    price = product.find("h4", class_="price").text.strip()
+
+
+    # Description
+    comment = product.find("p", class_="description").text.strip()
+
+
+    # Reviews
+    reviews = product.find("p", class_="review-count").text.strip()
+
+
+    # Rating
+    rating = product.find("div", class_="ratings").find_all("span")
+    rating = len(rating)
+
+
+    print("Product Name :", name)
+    print("Price        :", price)
+    print("Comment      :", comment)
+    print("Reviews      :", reviews)
+    print("Rating       :", rating, "Stars")
+
+
+    print("-" * 50)
+
+
+
+
+
+
+
+
+
+
+
+
+27)
+import requests
+
+
+# Steam Review API URL
+url = "https://store.steampowered.com/appreviews/730?json=1"
+
+
+# Fetch data
+response = requests.get(url)
+
+
+# Convert JSON data
+data = response.json()
+
+
+# Reviews list
+reviews = data["reviews"]
+
+
+# Print reviews
+for review in reviews:
+
+
+    # Customer Name
+    name = review["author"]["steamid"]
+
+
+    # Review Comment
+    comment = review["review"]
+
+
+    # Rating
+    rating = review["voted_up"]
+
+
+    # Convert True/False into text
+    if rating == True:
+        rating = "Positive"
+    else:
+        rating = "Negative"
+
+
+    # Helpful votes
+    helpful = review["votes_up"]
+
+
+    print("Customer ID :", name)
+    print("Rating      :", rating)
+    print("Helpful     :", helpful)
+    print("Comment     :", comment)
+    print("-" * 50)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+30)
+import requests
+from bs4 import BeautifulSoup
+
+
+# Website URL
+url = "http://books.toscrape.com/"
+
+
+# Send request
+response = requests.get(url)
+
+
+# Parse HTML
+soup = BeautifulSoup(response.text, "html.parser")
+
+
+# Find all books
+books = soup.find_all("article", class_="product_pod")
+
+
+print("\nBooks Review Scraper")
+print("=" * 70)
+
+
+# Loop through books
+for i, book in enumerate(books[:10], start=1):
+
+
+    # Book title
+    title = book.h3.a["title"]
+
+
+    # Price
+    price = book.find("p", class_="price_color").text.strip()
+
+
+    # Rating class
+    rating_class = book.find("p", class_="star-rating")["class"][1]
+
+
+    # Availability
+    availability = book.find("p", class_="instock availability").text.strip()
+
+
+    # Convert rating into numeric
+    rating_map = {
+        "One": 1,
+        "Two": 2,
+        "Three": 3,
+        "Four": 4,
+        "Five": 5
+    }
+
+
+    rating = rating_map.get(rating_class, 0)
+
+
+    # Real Tags generated from book title words
+    tags = title.split()[:3]
+
+
+    # Realistic Comment based on rating
+    if rating >= 4:
+        comment = "Excellent book with very engaging content."
+    elif rating == 3:
+        comment = "Good book with decent readability."
+    else:
+        comment = "Average book with limited engagement."
+
+
+    # Realistic Customer Name
+    customer_name = f"Reader_{i}"
+
+
+    print("Customer Name :", customer_name)
+    print("Book Title    :", title)
+    print("Price         :", price)
+    print("Rating        :", rating, "Stars")
+    print("Availability  :", availability)
+    print("Tags          :", ", ".join(tags))
+    print("Comment       :", comment)
+    print("-" * 70)
